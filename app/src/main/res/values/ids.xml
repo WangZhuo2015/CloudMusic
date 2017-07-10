@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="RankListItem" type="id" />
+    <item name="RankListItem_img" type="id" />
+    <item name="RankListItem_date" type="id" />
+    <item name="RankListItem_title" type="id" />
+</resources>
