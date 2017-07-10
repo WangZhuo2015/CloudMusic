@@ -2,6 +2,23 @@
 <resources>
     <item name="RankListItem" type="id" />
     <item name="RankListItem_img" type="id" />
-    <item name="RankListItem_date" type="id" />
     <item name="RankListItem_title" type="id" />
+
+
+    <item name="TracksListItem" type="id" />
+    <item name="TracksListItem_img" type="id" />
+    <item name="TracksListItem_title" type="id" />
+    <item name="TracksListItem_subTitle" type="id" />
+    <item name="TracksListItem_no" type="id" />
+
+    <item name="FM_BG" type="id" />
+    <item name="FM_Progress" type="id" />
+    <item name="FM_Title" type="id" />
+    <item name="FM_SubTitle" type="id" />
+    <item name="FM_Img" type="id" />
+    <item name="FM_Play" type="id" />
+    <item name="FM_Last" type="id" />
+    <item name="FM_Next" type="id" />
+    <!--<item name="TracksListItem_no" type="id" />-->
+    <!--<item name="TracksListItem_no" type="id" />-->
 </resources>

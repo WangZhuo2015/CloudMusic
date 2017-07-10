@@ -9,9 +9,10 @@ import com.google.gson.Gson
 import org.json.*
 import java.util.*
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 
-class Album {
+class Album : Serializable {
 
     @SerializedName("alias")
     var alias: Array<Any>? = null

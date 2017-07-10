@@ -22,7 +22,6 @@ import org.jetbrains.anko.support.v4.toast
  */
 class RankFragment : Fragment() {
     var isLoading = false
-    val maxRankId = 21
     //var rankRecyclerView: RecyclerView? = null
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
@@ -44,7 +43,7 @@ class RankFragment : Fragment() {
         val adapter = RankRecycleAdapter({ data ->
             toast("点击了${data.description}")
             //TODO- 跳转到歌曲列表
-            context.startActivity<TracksListActivity>("tracks" to data!!.tracks!!)
+            context.startActivity<TracksListActivity>("data" to data)
         })
         //设置Adapter
         rankRecyclerView!!.adapter = adapter
@@ -55,7 +54,7 @@ class RankFragment : Fragment() {
         swipe_container.onRefresh {
             if (!isLoading) {
                 isLoading = true
-                adapter.loadList(false, {
+                adapter.loadList( {
                     swipe_container.isRefreshing = false
                     isLoading = false
                 })
@@ -70,7 +69,7 @@ class RankFragment : Fragment() {
         }
 
         //读取一次数据
-        adapter.loadList(false,{
+        adapter.loadList({
             swipe_container.post {
                 kotlin.run {
                     swipe_container.isRefreshing = false

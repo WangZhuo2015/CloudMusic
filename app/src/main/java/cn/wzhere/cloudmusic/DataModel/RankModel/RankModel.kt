@@ -7,9 +7,10 @@ package cn.wzhere.cloudmusic.DataModel.RankModel
 import com.github.kittinunf.fuel.core.ResponseDeserializable
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 
-class RankModel {
+class RankModel : Serializable {
 
     @SerializedName("code")
     var code: Int = 0

@@ -9,9 +9,10 @@ import com.google.gson.Gson
 import org.json.*
 import java.util.*
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 
-class BMusic {
+class BMusic : Serializable {
 
     @SerializedName("bitrate")
     var bitrate: String? =""

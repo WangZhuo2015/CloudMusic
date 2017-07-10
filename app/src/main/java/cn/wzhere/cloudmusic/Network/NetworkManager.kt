@@ -1,11 +1,14 @@
 package cn.wzhere.cloudmusic.Network
 
+import cn.wzhere.cloudmusic.DataModel.LoginModel
+import cn.wzhere.cloudmusic.DataModel.PersonalFMModel.FMModel
 import cn.wzhere.cloudmusic.DataModel.RankModel.RankModel
 import cn.wzhere.cloudmusic.DataModel.RankModel.RankResult
 import com.github.kittinunf.fuel.core.FuelError
 import com.github.kittinunf.fuel.core.FuelManager
 import com.github.kittinunf.fuel.core.Method
 import com.github.kittinunf.result.Result
+import java.net.HttpCookie
 
 /**
  * Created by wangzhuo on 2017/7/9.
@@ -13,6 +16,10 @@ import com.github.kittinunf.result.Result
 class NetworkManager {
     companion object {
 
+        var music_u = ""
+        var cookie = "__remember_me=true; MUSIC_U=cc3a183ff50cb7aad64191d891f2cd8720df35b3e4b78fe10eb21ab4a88f1fc75cae9f78217c06b18e5e99b95265e89a637a6af13fed428e8bafcdfe5ad2b092; __csrf=4273e98f5d114c6edb62fa1defec5db1"
+        var cookies:String=""
+        public var httpCookies = mutableListOf<HttpCookie>()
         //Host
         private fun serviceEndPoint(): String {
             return "http://115.159.70.179:3000"
@@ -23,29 +30,26 @@ class NetworkManager {
 
         private val rankURL = serviceEndPoint() + "/top/list"
 
+        private val fmURL = serviceEndPoint() + "/personal_fm"
+
 
         internal fun getRank(
                 idx: String,
                 complete: (list: RankResult?, error: FuelError?) -> Unit) {
             FuelManager.instance
-                    .request(Method.GET,
-                            rankURL,
-                            listOf(Pair("idx", idx)))
-                                    .responseObject(RankModel.Deserializer()) { request, response, result ->
-                                        when (result) {
-                                            is Result.Failure -> {
-                                                complete(null, result.error)
-                                            }
-                                            is Result.Success -> {
-                                                val (data, err) = result
-                                                complete(data!!.result
-                                                        , null)
-                                            }
-                                        }
-                                    }
+                    .request(Method.GET, rankURL, listOf(Pair("idx", idx)))
+                    .responseObject(RankModel.Deserializer()) { request, response, result ->
+                        when (result) {
+                            is Result.Failure -> {
+                                complete(null, result.error)
+                            }
+                            is Result.Success -> {
+                                val (data, err) = result
+                                complete(data!!.result, null)
+                            }
+                        }
+                    }
         }
-
-
 
 
         //    手机账号登录网易云音乐账号
@@ -65,28 +69,62 @@ class NetworkManager {
 //            "captchaId": "LcsUkoNoMZiXGNmvF4rPks3G"
 //        }
 
-//        internal fun login(
-//                city: String,
-//                complete: (list: Array<HeWeather5>?, error: FuelError?) -> Unit) {
-//            FuelManager.instance
-//                    .request(Method.GET,
-//                            weatherURL,
-//                            listOf(
-//                                    Pair("key", "bc16930eb4f642588033b094e4a25ad7"),
-//                                    Pair("city", city)))
-//                    .responseObject(WeatherModel.Deserializer()) { request, response, result ->
-//                        when (result) {
-//                            is RankResult.Failure -> {
-//                                complete(null, result.error)
-//                            }
-//                            is RankResult.Success -> {
-//                                val (data, err) = result
-//                                complete(data!!.heWeather5
-//                                        , null)
-//                            }
-//                        }
-//                    }
-//        }
+        internal fun login(
+                phone: String,
+                password: String,
+                complete: (loginModel: LoginModel?, error: FuelError?) -> Unit) {
+            FuelManager.instance
+                    .request(Method.GET, phoneLogin,
+                            listOf(Pair("phone", phone),
+                                    Pair("password", password)))
+                    .responseObject(LoginModel.Deserializer()) { request, response, result ->
+                        when (result) {
+                            is Result.Failure -> {
+                                complete(null, result.error)
+                            }
+                            is Result.Success -> {
+                                //Set-Cookie
+                                cookies = response.httpResponseHeaders
+                                        .filter { it.key.equals("Set-Cookie",true) }
+                                        .values.first()
+                                        .reduce{ l,r ->l.substring(0,l.indexOf(';')+1)+" "+r }
+
+//                                response.httpResponseHeaders
+//                                        .filter { it.key.equals("Set-Cookie",true) }
+//                                        .values
+//                                        .first()
+//                                        .forEach{httpCookies.plus(HttpCookie.parse(it))}
+                                FuelManager.instance.baseHeaders = mapOf("Cookie" to cookies)
+//                                music_u = response.httpResponseHeaders
+//                                        .filter { it.key.startsWith("Set-Cookie") }.values.first()
+//                                        .filter { it.startsWith("MUSIC_U=") }.first()
+
+
+                                val (data, err) = result
+                                complete(data!!, null)
+                            }
+                        }
+                    }
+        }
+
+
+
+        fun loadFM(complete: (list: FMModel?, error: FuelError?) -> Unit){
+            FuelManager.instance
+                    .request(Method.GET, fmURL, listOf())
+                    .responseObject(FMModel.Deserializer()) { request, response, result ->
+                        print(result.component1())
+                        when (result) {
+                            is Result.Failure -> {
+                                complete(null, result.error)
+                            }
+                            is Result.Success -> {
+                                val (data, err) = result
+                                complete(data!!, null)
+                            }
+                        }
+                    }
+        }
 
 
     }//static

@@ -9,9 +9,10 @@ import com.google.gson.Gson
 import org.json.*
 import java.util.*
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 
-class RankResult {
+class RankResult : Serializable {
 
     @SerializedName("adType")
     var adType: String? = ""

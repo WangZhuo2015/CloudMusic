@@ -1,7 +1,7 @@
-package cn.wzhere.cloudmusic.DataModel.RankModel
+package cn.wzhere.cloudmusic.DataModel
 
 //
-//	Creator.java
+//	Profile.java
 //	Model file generated using JSONExport: https://github.com/Ahmed-Ali/JSONExport
 
 import com.github.kittinunf.fuel.core.ResponseDeserializable
@@ -9,65 +9,64 @@ import com.google.gson.Gson
 import org.json.*
 import java.util.*
 import com.google.gson.annotations.SerializedName
-import java.io.Serializable
 
 
-class Creator : Serializable {
+class Profile {
 
     @SerializedName("accountStatus")
-    var accountStatus: String? = ""
+    var accountStatus:String = ""
     @SerializedName("authStatus")
-    var authStatus: String? = ""
+    var authStatus:String = ""
     @SerializedName("authority")
-    var authority: String? = ""
+    var authority:String = ""
     @SerializedName("avatarImgId")
-    var avatarImgId: String? = ""
+    var avatarImgId:String = ""
     @SerializedName("avatarImgIdStr")
-    var avatarImgIdStr: String? = ""
+    var avatarImgIdStr: String? = null
     @SerializedName("avatarUrl")
-    var avatarUrl: String? = ""
+    var avatarUrl: String? = null
     @SerializedName("backgroundImgId")
-    var backgroundImgId: String? = ""
+    var backgroundImgId:String = ""
     @SerializedName("backgroundImgIdStr")
-    var backgroundImgIdStr: String? = ""
+    var backgroundImgIdStr: String? = null
     @SerializedName("backgroundUrl")
-    var backgroundUrl: String? = ""
+    var backgroundUrl: String? = null
     @SerializedName("birthday")
-    var birthday: String? = ""
+    var birthday:String = ""
     @SerializedName("city")
-    var city: String? = ""
+    var city:String = ""
     @SerializedName("defaultAvatar")
     var isDefaultAvatar: Boolean = false
     @SerializedName("description")
-    var description: String? = ""
+    var description: String? = null
     @SerializedName("detailDescription")
-    var detailDescription: String? = ""
+    var detailDescription: String? = null
     @SerializedName("djStatus")
-    var djStatus: String? = ""
+    var djStatus:String = ""
     @SerializedName("expertTags")
     var expertTags: Any? = null
     @SerializedName("followed")
     var isFollowed: Boolean = false
     @SerializedName("gender")
-    var gender: String? = ""
+    var gender:String = ""
     @SerializedName("mutual")
     var isMutual: Boolean = false
     @SerializedName("nickname")
-    var nickname: String? = ""
+    var nickname: String? = null
     @SerializedName("province")
-    var province: String? = ""
+    var province:String = ""
     @SerializedName("remarkName")
     var remarkName: Any? = null
     @SerializedName("signature")
-    var signature: String? = ""
+    var signature: String? = null
     @SerializedName("userId")
-    var userId: String? = ""
+    var userId:String = ""
     @SerializedName("userType")
-    var userType: String? = ""
+    var userType:String = ""
     @SerializedName("vipType")
-    var vipType: String? = ""
+    var vipType:String = ""
 
-    class Deserializer : ResponseDeserializable<Creator> {
-        override fun deserialize(content: String) = Gson().fromJson(content, Creator::class.java)
+    class Deserializer : ResponseDeserializable<Profile> {
+        override fun deserialize(content: String) = Gson().fromJson(content, Profile::class.java)
     }
 }

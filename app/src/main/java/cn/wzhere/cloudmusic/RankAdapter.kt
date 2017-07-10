@@ -11,6 +11,7 @@ import android.widget.TextView
 import cn.wzhere.cloudmusic.DataModel.RankModel.RankResult
 import cn.wzhere.cloudmusic.Network.NetworkManager
 import com.bumptech.glide.Glide
+import kotlinx.coroutines.experimental.runBlocking
 import org.jetbrains.anko.*
 
 /**
@@ -49,16 +50,19 @@ class RankRecycleAdapter(internal val didSelectedAtPos: (data: RankResult) -> Un
         return mItems.size
     }
 
-    internal fun loadList(loadMore: Boolean = true, complete: (() -> Unit)?) {
+    internal fun loadList(complete: (() -> Unit)?) {
         //TODO -:分批获取详细数据
-        for (i in 0..maxRankId){
-            NetworkManager.getRank("$i"){ data ,err ->
-                if (err == null){
-                    mItems.add(data!!)
-                    notifyDataSetChanged()
-                }
-                mContext!!.toast("发生错误 $i 号排行榜加载失败")
-            }
+        loadChannel(0)
+    }
+
+    fun loadChannel(idx:Int){
+        if (idx>maxRankId) return
+        NetworkManager.getRank("$idx"){ data ,err ->
+            if (err == null){
+                mItems.add(data!!)
+                notifyDataSetChanged()
+            }else mContext!!.toast("发生错误 $idx 号排行榜加载失败")
+            loadChannel(idx+1)
         }
     }
 
