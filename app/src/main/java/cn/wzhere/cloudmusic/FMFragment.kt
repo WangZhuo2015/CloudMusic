@@ -18,6 +18,8 @@ import android.graphics.Bitmap
 import android.media.AudioManager
 import android.media.MediaPlayer
 import android.net.Uri
+import android.view.Gravity
+import android.widget.SeekBar
 import com.bumptech.glide.request.target.SimpleTarget
 import org.jetbrains.anko.sdk25.coroutines.onClick
 import org.jetbrains.anko.support.v4.toast
@@ -31,10 +33,11 @@ class FMFragment : Fragment() {
     val player = MediaPlayer()
     var musicList: Array<FMData>? = null
     var lock = false
+    var playing = false
+
 
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
-        var playing = false
         return UI {
             frameLayout {
                 imageView() {
@@ -49,8 +52,8 @@ class FMFragment : Fragment() {
                     }
                     imageView() {
                         id = R.id.FM_Img
-                    }.lparams(dip(400), dip(400)) {
-
+                    }.lparams(dip(200), dip(200)) {
+                        gravity = Gravity.CENTER_HORIZONTAL
                     }
                     linearLayout {
                         button("前一首")
@@ -68,7 +71,7 @@ class FMFragment : Fragment() {
 
                             }
                         }
-                        button("下一首"){
+                        button("下一首") {
                             onClick {
                                 next()
                             }
@@ -82,6 +85,13 @@ class FMFragment : Fragment() {
                 }.lparams(matchParent, matchParent)
             }
         }.view
+
+
+        player.setOnBufferingUpdateListener { mediaPlayer, i ->
+            find<SeekBar>(R.id.MUSIC_Progress).secondaryProgress = i
+            toast("加载进度 $i")
+        }
+        
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
@@ -90,16 +100,20 @@ class FMFragment : Fragment() {
         requestFM()
     }
 
-    fun requestFM(){
+    fun requestFM() {
         player.stop()
         NetworkManager.loadFM { list, error ->
-
-            musicList = list?.data
-            NetworkManager.findMp3ById(musicList!![0].id){ song, error ->
-                refreshUI()
-                autoPlaySong(song!!.data!![0].url!!)
+            if (error == null) {
+                musicList = list?.data
+                NetworkManager.findMp3ById(musicList!![0].id) { song, error ->
+                    refreshUI()
+                    autoPlaySong(song!!.data!![0].url!!)
+                }
+                toast("加载 ${musicList!![0].name}")
+            }else{
+                toast("出错了 ${error}")
+                requestFM()
             }
-            toast("加载 ${musicList!![0].name}")
         }
     }
 
@@ -112,9 +126,8 @@ class FMFragment : Fragment() {
         player.setOnPreparedListener { mediaPlayer ->
             mediaPlayer.start()
         }
-        player.setOnBufferingUpdateListener { mediaPlayer, i ->
-            toast("加载进度 $i")
-        }
+
+
     }
 
     fun play() {
@@ -127,7 +140,7 @@ class FMFragment : Fragment() {
         player.pause()
     }
 
-    fun next(){
+    fun next() {
         requestFM()
     }
 
@@ -165,5 +178,10 @@ class FMFragment : Fragment() {
                 .dontAnimate()
                 .centerCrop()
                 .into(img)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        player.release()
     }
 }

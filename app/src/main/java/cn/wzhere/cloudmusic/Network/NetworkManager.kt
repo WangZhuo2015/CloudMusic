@@ -21,12 +21,9 @@ import android.content.SharedPreferences
  */
 class NetworkManager {
     companion object {
-
-
-        var music_u = ""
-        var cookie = "__remember_me=true; MUSIC_U=cc3a183ff50cb7aad64191d891f2cd8720df35b3e4b78fe10eb21ab4a88f1fc75cae9f78217c06b18e5e99b95265e89a637a6af13fed428e8bafcdfe5ad2b092; __csrf=4273e98f5d114c6edb62fa1defec5db1"
+        //用于储存 Cookie 信息
         var cookies: String = ""
-        public var httpCookies = mutableListOf<HttpCookie>()
+
         //Host
         private fun host(): String {
             return "http://115.159.70.179:3000"
@@ -34,18 +31,28 @@ class NetworkManager {
 
         //Login 手机号登录接口
         private val phoneLogin = host() + "/login/cellphone"
-
+        //排行榜接口
         private val rankURL = host() + "/top/list"
-
+        //私人 FM
         private val fmURL = host() + "/personal_fm"
-
+        //根据 id 获取 URL
         private val idUrl = host() + "/music/url"
+        //喜欢歌曲
+        private val likeUrl = host() + "/like"
 
-
-        fun setAuthCookies(cookies: String){
+        //设置Cookie
+        fun setAuthCookies(cookies: String) {
             this.cookies = cookies
+            FuelManager.instance.baseHeaders = mapOf("Cookie" to cookies)
+
         }
 
+        //    获取排行榜信息
+        //    接口地址 :https://http://115.159.70.179:3000/top/list
+        //    请求方法 :GET
+        //    请求参数(url) :
+        //          idx: 排行榜编号
+        //    /top/list?idx=1
         internal fun getRank(
                 idx: String,
                 complete: (list: RankResult?, error: FuelError?) -> Unit) {
@@ -72,20 +79,10 @@ class NetworkManager {
         //          phone: 手机号码
         //          password: 密码
         //    /login/cellphone?phone=xxx&password=yyy
-
-        //失败 {"msg":"帐号不存在","code":501}
-        //
-
-//        {
-//            "msg": "ip高频",
-//            "code": 415,
-//            "captchaId": "LcsUkoNoMZiXGNmvF4rPks3G"
-//        }
-
         internal fun login(
                 phone: String,
                 password: String,
-                complete: (loginModel: LoginModel?,cookies:String, error: FuelError?) -> Unit) {
+                complete: (loginModel: LoginModel?, cookies: String, error: FuelError?) -> Unit) {
             FuelManager.instance
                     .request(Method.GET, phoneLogin,
                             listOf(Pair("phone", phone),
@@ -93,28 +90,18 @@ class NetworkManager {
                     .responseObject(LoginModel.Deserializer()) { request, response, result ->
                         when (result) {
                             is Result.Failure -> {
-                                complete(null,"", result.error)
+                                complete(null, "", result.error)
                             }
                             is Result.Success -> {
-                                //Set-Cookie
-                                cookies = response.httpResponseHeaders
+                                /**
+                                 * 从请求头获取 Cookie 信息
+                                 */
+                                val cookies = response.httpResponseHeaders
                                         .filter { it.key.equals("Set-Cookie", true) }
-                                        .values.first()
-                                        .reduce { l, r -> l.substring(0, l.indexOf(';') + 1) + " " + r }
-
-//                                response.httpResponseHeaders
-//                                        .map { it.key.equals("Set-Cookie", true) }
-//                                        .first()
-
-
-//                                        .filter { it.key.equals("Set-Cookie",true) }
-//                                        .values
-//                                        .first()
-//                                        .forEach{httpCookies.plus(HttpCookie.parse(it))}
-                                FuelManager.instance.baseHeaders = mapOf("Cookie" to cookies)
-//                                music_u = response.httpResponseHeaders
-//                                        .filter { it.key.startsWith("Set-Cookie") }.values.first()
-//                                        .filter { it.startsWith("MUSIC_U=") }.first()
+                                        .values
+                                        .first()
+                                        .map { it.substring(0, it.indexOf(';') + 1) }
+                                        .reduce { l, r -> l + r }
 
                                 val (data, err) = result
                                 complete(data!!, cookies, null)
@@ -123,7 +110,26 @@ class NetworkManager {
                     }
         }
 
+        //    喜欢歌曲
+        //    接口地址 :https://http://115.159.70.179:3000/music/url
+        //    请求方法 :GET
+        //    请求参数(url) :
+        //          id:  歌曲 id
+        //    /like
+        fun likeId(id: String,
+                   complete: (success: String) -> Unit) {
+            FuelManager.instance
+                    .request(Method.GET, likeUrl, listOf(Pair("id", id))).responseString { request, response, result ->
+                complete(result.get())
+            }
+        }
 
+
+        //    私人 FM 接口
+        //    接口地址 :https://http://115.159.70.179:3000/personal_fm
+        //    请求方法 :GET
+        //    请求参数(url) : 无
+        //    /personal_fm
         fun loadFM(complete: (list: FMModel?, error: FuelError?) -> Unit) {
             FuelManager.instance
                     .request(Method.GET, fmURL, listOf())
@@ -141,7 +147,12 @@ class NetworkManager {
                     }
         }
 
-
+        //    根据音乐 ID 获取 URL 数据
+        //    接口地址 :https://http://115.159.70.179:3000/music/url
+        //    请求方法 :GET
+        //    请求参数(url) :
+        //          id:  歌曲 id
+        //    /music/url
         fun findMp3ById(id: String,
                         complete: (song: SongModel?, error: FuelError?) -> Unit) {
             FuelManager.instance

@@ -9,13 +9,9 @@ import android.view.Window
 import android.view.WindowManager
 import cn.wzhere.cloudmusic.DataModel.RankModel.RankResult
 import cn.wzhere.cloudmusic.DataModel.RankModel.Track
+import org.jetbrains.anko.*
 
-import kotlinx.android.synthetic.main.activity_tracks_list.*
-import org.jetbrains.anko.backgroundColor
-import org.jetbrains.anko.matchParent
 import org.jetbrains.anko.recyclerview.v7.recyclerView
-import org.jetbrains.anko.toolbar
-import org.jetbrains.anko.verticalLayout
 
 class TracksListActivity : AppCompatActivity() {
     var tracks: Array<Track>? = null
@@ -45,8 +41,9 @@ class TracksListActivity : AppCompatActivity() {
                 val myLayoutManager = LinearLayoutManager(context)
                 myLayoutManager.orientation = OrientationHelper.VERTICAL
                 layoutManager = myLayoutManager
-                adapter = TracksListAdapter(tracks!!, { data ->
-
+                adapter = TracksListAdapter(tracks!!, { idx ->
+                    startActivity<MusicPlayerActivity>("idx" to idx,"list" to this@TracksListActivity.tracks!!)
+                    //Pair("list",this@TracksListActivity.tracks),Pair("idx",idx)
                 })
                 itemAnimator = DefaultItemAnimator()
                 addItemDecoration(DividerItemDecoration(this@TracksListActivity, LinearLayoutManager.VERTICAL));

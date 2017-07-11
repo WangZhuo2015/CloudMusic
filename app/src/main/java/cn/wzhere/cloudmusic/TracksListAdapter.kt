@@ -18,7 +18,7 @@ import org.jetbrains.anko.*
  * Created by wangzhuo on 2017/7/10.
  */
 class TracksListAdapter(val mItems: Array<Track>,
-                        internal val didSelectedAtPos: (data: Track) -> Unit) : RecyclerView.Adapter<TracksListAdapter.ViewHolder>() {
+                        internal val didSelectedAtPos: (idx: Int) -> Unit) : RecyclerView.Adapter<TracksListAdapter.ViewHolder>() {
     internal var mContext: Context? = null
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         mContext = parent.context
@@ -41,7 +41,7 @@ class TracksListAdapter(val mItems: Array<Track>,
             with(holder.container) {
                 setOnClickListener(object : View.OnClickListener {
                     override fun onClick(v: View) {
-                        didSelectedAtPos(mItems!![position])
+                        didSelectedAtPos(position)
                     }
                 })
             }

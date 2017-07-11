@@ -22,8 +22,6 @@ import org.jetbrains.anko.support.v4.toast
  */
 class RankFragment : Fragment() {
     var isLoading = false
-    //var rankRecyclerView: RecyclerView? = null
-
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         // Inflate the layout for this fragment

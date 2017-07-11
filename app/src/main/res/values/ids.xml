@@ -19,6 +19,15 @@
     <item name="FM_Play" type="id" />
     <item name="FM_Last" type="id" />
     <item name="FM_Next" type="id" />
+
+    <item name="MUSIC_BG" type="id" />
+    <item name="MUSIC_Progress" type="id" />
+    <item name="MUSIC_Title" type="id" />
+    <item name="MUSIC_SubTitle" type="id" />
+    <item name="MUSIC_Img" type="id" />
+    <item name="MUSIC_Play" type="id" />
+    <item name="MUSIC_Last" type="id" />
+    <item name="MUSIC_Next" type="id" />
     <!--<item name="TracksListItem_no" type="id" />-->
     <!--<item name="TracksListItem_no" type="id" />-->
 </resources>

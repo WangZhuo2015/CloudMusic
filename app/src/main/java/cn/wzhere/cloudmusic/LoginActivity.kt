@@ -8,7 +8,6 @@ import android.os.PersistableBundle
 import android.view.View
 import android.widget.EditText
 import cn.wzhere.cloudmusic.DataModel.User
-import kotlinx.android.synthetic.main.activity_login.*
 import org.jetbrains.anko.*
 import org.jetbrains.anko.sdk25.coroutines.onClick
 
@@ -26,6 +25,7 @@ class LoginActivity : AppCompatActivity() {
             backgroundColor = Color.WHITE
             val phone =editText(){
                 hint = "手机号"
+                setText(User.get().lastPhone())
             }
 
             val password = editText(){
@@ -46,6 +46,15 @@ class LoginActivity : AppCompatActivity() {
                     }
                 }
             }
+            button("清楚登录信息"){
+                onClick {
+                    User.get().resetInfo()
+                    toast("SUCCESS")
+                }
+            }
+
         }
+
+
     }
 }

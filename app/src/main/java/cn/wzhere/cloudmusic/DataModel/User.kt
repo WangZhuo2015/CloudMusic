@@ -8,9 +8,14 @@ import cn.wzhere.cloudmusic.Network.NetworkManager
  */
 class User private constructor(){
 
+    //为了使用 Shared Preference,需要传入 Context
     var mContext:Context? = null
     val cookieKey = "COOKIE"
     val phoneKey = "PHONE"
+
+    /**
+     * 单例模式
+     */
     companion object {
         fun get(): User {
             return Inner.single
@@ -21,6 +26,7 @@ class User private constructor(){
         val single  = User()
     }
 
+    //登录账号并保存 cookie 等信息
     fun login(phone:String,password:String,completionHandler:(error:String?)->Unit){
         val lastPhone = loadInfo(phoneKey)
         if (phone == lastPhone){
@@ -42,6 +48,15 @@ class User private constructor(){
         }
     }
 
+    fun lastPhone():String{
+        return loadInfo(phoneKey)
+    }
+
+    fun resetInfo(){
+        saveInfo(phoneKey,"")
+        saveInfo(cookieKey,"")
+    }
+
     //通过SharedPreferences保存信息
     private fun saveInfo(key:String,info: String) {
         //打开Preferences，Cookie，如果存在则打开它，否则创建新的Preferences
@@ -54,7 +69,7 @@ class User private constructor(){
         editor.commit()
     }
 
-    //从SharedPreferences取出cookie信息
+    //从SharedPreferences取出信息
     private fun loadInfo(key:String): String {
         //打开Preferences
         val preferences = mContext!!.getSharedPreferences("User", Context.MODE_PRIVATE)
