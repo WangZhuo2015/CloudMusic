@@ -18,6 +18,7 @@ import android.view.View
 import android.view.ViewGroup
 
 import android.widget.TextView
+import cn.wzhere.cloudmusic.DataModel.User
 import cn.wzhere.cloudmusic.Network.NetworkManager
 
 class MainActivity : AppCompatActivity() {
@@ -40,6 +41,8 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+
+        User.get().mContext = applicationContext
 
         val toolbar = findViewById<View>(R.id.toolbar) as Toolbar
         setSupportActionBar(toolbar)

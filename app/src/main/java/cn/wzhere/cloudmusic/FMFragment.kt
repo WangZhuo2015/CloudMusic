@@ -1,41 +1,26 @@
 package cn.wzhere.cloudmusic
 
-import android.media.AsyncPlayer
-import android.media.MediaPlayer
 import android.os.Bundle
 import android.support.v4.app.Fragment
-import android.support.v7.widget.DefaultItemAnimator
-import android.support.v7.widget.GridLayoutManager
-import android.support.v7.widget.LinearLayoutManager
-import android.support.v7.widget.OrientationHelper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
-import cn.wzhere.cloudmusic.DataModel.PersonalFMModel.Data
+import cn.wzhere.cloudmusic.DataModel.PersonalFMModel.FMData
 import cn.wzhere.cloudmusic.Network.NetworkManager
 import com.bumptech.glide.Glide
-import kotlinx.android.synthetic.main.fragment_rank.*
 import org.jetbrains.anko.*
 import org.jetbrains.anko.support.v4.UI
 import org.jetbrains.anko.support.v4.find
-import org.jetbrains.anko.support.v4.onRefresh
-import org.jetbrains.anko.support.v4.toast
-import java.net.HttpCookie
 import com.bumptech.glide.request.animation.GlideAnimation
 import android.graphics.Bitmap
-import android.graphics.drawable.BitmapDrawable
+import android.media.AudioManager
+import android.media.MediaPlayer
 import android.net.Uri
-import android.renderscript.Allocation
-import android.renderscript.RenderScript
-import android.renderscript.ScriptIntrinsicBlur
-import android.widget.ProgressBar
 import com.bumptech.glide.request.target.SimpleTarget
-import com.fivehundredpx.android.blur.BlurringView
 import org.jetbrains.anko.sdk25.coroutines.onClick
-import java.net.URI
-import java.net.URL
+import org.jetbrains.anko.support.v4.toast
 
 
 /**
@@ -43,8 +28,10 @@ import java.net.URL
  */
 class FMFragment : Fragment() {
     var isLoading = false
-    val player: MediaPlayer = MediaPlayer()
-    var musicList: Array<Data>? = null
+    val player = MediaPlayer()
+    var musicList: Array<FMData>? = null
+    var lock = false
+
     override fun onCreateView(inflater: LayoutInflater?, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         var playing = false
@@ -67,24 +54,27 @@ class FMFragment : Fragment() {
                     }
                     linearLayout {
                         button("前一首")
-                        button("播放"){
+                        button("播放") {
 
                             onClick {
                                 playing = !playing
-                                if(playing){
+                                if (playing) {
                                     play()
                                     text = "暂停"
-                                }
-                                else {
+                                } else {
                                     pause()
                                     text = "播放"
                                 }
 
                             }
                         }
-                        button("下一首")
+                        button("下一首"){
+                            onClick {
+                                next()
+                            }
+                        }
                     }
-                    horizontalProgressBar {
+                    seekBar {
                         id = R.id.FM_Progress
                     }
 
@@ -97,32 +87,48 @@ class FMFragment : Fragment() {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        NetworkManager.login("13151190802", "wang730000", { data, err ->
-            print(data)
-            NetworkManager.loadFM { list, error ->
-                print(list)
-                musicList = list?.data
+        requestFM()
+    }
+
+    fun requestFM(){
+        player.stop()
+        NetworkManager.loadFM { list, error ->
+
+            musicList = list?.data
+            NetworkManager.findMp3ById(musicList!![0].id){ song, error ->
                 refreshUI()
+                autoPlaySong(song!!.data!![0].url!!)
             }
-        })
-
-
-        player.setOnBufferingUpdateListener{ player,percentage ->
-            val progress = find<ProgressBar>(R.id.FM_Progress)
-            progress.max = 100
-            progress.min = 0
-            progress.progress = percentage
+            toast("加载 ${musicList!![0].name}")
         }
     }
 
-    fun play(){
-        val item = musicList!![1]
+    fun autoPlaySong(url: String) {
+        player.stop()
         player.reset()
-        player.setDataSource("http://219.138.125.22/myweb/mp3/CMP3/JH19.MP3")//item.mp3Url)
-        player.prepare()
+        player.setAudioStreamType(AudioManager.STREAM_MUSIC)
+        player.setDataSource(context, Uri.parse(url))
+        player.prepareAsync()
+        player.setOnPreparedListener { mediaPlayer ->
+            mediaPlayer.start()
+        }
+        player.setOnBufferingUpdateListener { mediaPlayer, i ->
+            toast("加载进度 $i")
+        }
     }
-    fun pause(){
+
+    fun play() {
+        if (player.isPlaying) {
+            player.start()
+        }
+    }
+
+    fun pause() {
         player.pause()
+    }
+
+    fun next(){
+        requestFM()
     }
 
     fun refreshUI() {
@@ -131,10 +137,9 @@ class FMFragment : Fragment() {
         val title = find<TextView>(R.id.FM_Title)
         val subTitle = find<TextView>(R.id.FM_SubTitle)
 
-        val item = musicList!![1]
+        val item = musicList!![0]
         title.text = item.name
         subTitle.text = item.artists!![0].name
-
 
         val target = (object : SimpleTarget<Bitmap>() {
             override fun onResourceReady(resource: Bitmap?, glideAnimation: GlideAnimation<in Bitmap>?) {

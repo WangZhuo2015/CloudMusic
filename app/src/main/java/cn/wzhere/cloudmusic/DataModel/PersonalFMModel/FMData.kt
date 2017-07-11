@@ -1,11 +1,9 @@
 package cn.wzhere.cloudmusic.DataModel.PersonalFMModel
 
 //
-//	Data.java
+//	FMData.java
 //	Model file generated using JSONExport: https://github.com/Ahmed-Ali/JSONExport
 
-import org.json.*
-import java.util.*
 import com.google.gson.annotations.SerializedName
 
 import cn.wzhere.cloudmusic.DataModel.RankModel.Album
@@ -15,7 +13,7 @@ import com.github.kittinunf.fuel.core.ResponseDeserializable
 import com.google.gson.Gson
 
 
-class Data {
+class FMData {
 
     @SerializedName("album")
     var album: Album? = null
@@ -34,25 +32,25 @@ class Data {
     @SerializedName("copyFrom")
     var copyFrom: String? = null
     @SerializedName("copyrightId")
-    var copyrightId: Int = 0
+    var copyrightId: String = ""
     @SerializedName("crbt")
     var crbt: Any? = null
     @SerializedName("dayPlays")
-    var dayPlays: Int = 0
+    var dayPlays: String = ""
     @SerializedName("disc")
     var disc: String? = null
     @SerializedName("duration")
-    var duration: Int = 0
+    var duration: String = ""
     @SerializedName("fee")
-    var fee: Int = 0
+    var fee: String = ""
     @SerializedName("ftype")
-    var ftype: Int = 0
+    var ftype: String = ""
     @SerializedName("hMusic")
     var hMusic: BMusic? = null
     @SerializedName("hearTime")
-    var hearTime: Int = 0
+    var hearTime: String = ""
     @SerializedName("id")
-    var id: Int = 0
+    var id: String = ""
     @SerializedName("lMusic")
     var lMusic: BMusic? = null
     @SerializedName("mMusic")
@@ -60,13 +58,13 @@ class Data {
     @SerializedName("mp3Url")
     var mp3Url: String? = null
     @SerializedName("mvid")
-    var mvid: Int = 0
+    var mvid: String = ""
     @SerializedName("name")
     var name: String? = null
     @SerializedName("no")
-    var no: Int = 0
+    var no: String = ""
     @SerializedName("playedNum")
-    var playedNum: Int = 0
+    var playedNum: String = ""
     @SerializedName("popularity")
     var popularity: Float = 0.toFloat()
     @SerializedName("privilege")
@@ -78,18 +76,18 @@ class Data {
     @SerializedName("rtUrls")
     var rtUrls: Any? = null
     @SerializedName("rtype")
-    var rtype: Int = 0
+    var rtype: String = ""
     @SerializedName("rurl")
     var rurl: Any? = null
     @SerializedName("score")
-    var score: Int = 0
+    var score: String = ""
     @SerializedName("starred")
     var isStarred: Boolean = false
     @SerializedName("starredNum")
-    var starredNum: Int = 0
+    var starredNum: String = ""
     @SerializedName("status")
-    var status: Int = 0
-    class Deserializer : ResponseDeserializable<Data> {
-        override fun deserialize(content: String) = Gson().fromJson(content, Data::class.java)
+    var status: String = ""
+    class Deserializer : ResponseDeserializable<FMData> {
+        override fun deserialize(content: String) = Gson().fromJson(content, FMData::class.java)
     }
 }
